@@ -1,81 +1,46 @@
-# 🚀 FastTrackHire
+# FastTrackHire - System & Application Details
 
-FastTrackHire is an AI-powered mock interview web application built with **Python**, **Streamlit**, and **LLMs (LLaMA3-8B-8192)** . It helps users simulate company-specific interview experiences by analyzing their resume and tailoring questions accordingly.
+## System Overview
+**FastTrackHire** is an AI-powered mock interview web application designed to help users simulate company-specific technical interviews. It analyzes the user's resume and tailors questions accordingly, using advanced Large Language Models (LLMs). The application is built with Python and Streamlit, utilizing MongoDB for data persistence and Groq's API for AI inference.
 
-## 🔍 Features
+## Key Features
 
-- ✉️ Input your **Email**, **Resume/CV**, and **Target Company**
-- 🤖 Get **company-specific interview questions** powered by LLaMA3
-- 🎤 Interactive mock interview experience
-- 💡 Receive smart feedback and suggestions to improve
-- ⚡ Fast-track your preparation with insights from top MNC interviews
+### 1. User Authentication & Profile Management
+- **Secure Login/Signup:** Users can create an account using their email and password (passwords are hashed using SHA-256 before being stored in MongoDB).
+- **Session Management:** The system maintains user sessions, keeping them logged in and persisting their current mock interview progress.
 
+### 2. Resume Parsing & Storage
+- **PDF Upload:** Users can upload their resumes in PDF format.
+- **Text Extraction:** Uses `pdfplumber` to extract text from the uploaded resume to feed context to the LLM.
+- **Resume Persistence:** Saves the raw PDF binary and the extracted text directly into the user's profile in the MongoDB database, allowing for preview and download anytime.
 
-## 🛠 Tech Stack
+### 3. AI-Powered Mock Interviews
+- **Company Selection:** Users can choose from top tech companies (Google, Amazon, Microsoft, Apple, Meta, Netflix, etc.) to tailor the difficulty and focus of the interview.
+- **Structured Interview Flow:** 
+  - The AI interviewer greets the user by name.
+  - Asks **3 Data Structures and Algorithms (DSA) questions** specifically modeled after the selected company's typical medium-hard difficulty.
+  - Follows up with **3-4 in-depth questions based on the candidate's resume/CV**.
+- **Interactive Chat:** Provides a conversational chat interface with dynamic user and assistant message bubbles. Ensures the AI asks only one question at a time.
 
-- Python 🐍  
-- Streamlit 🌐  
-- LLaMA3-8B-8192 (via Grok) 🧠  
-- Resume Parsing and Contextual Question Generation 📄
-- Natural Language Processing
-  
-## Architecture Diagram
-![My Project Logo](https://github.com/CharanSuggala26/MockInterviews/blob/main/diagrams/Architecture.png)
+### 4. Real-time Autosave & Session State
+- **Draft Sessions:** Interview progress is autosaved to MongoDB after every user and assistant message. If the app reloads, the session is preserved.
+- **Chat History Management:** Manages message history efficiently, rendering the ongoing conversation directly within the Streamlit container.
 
-## Work Flow 
-![My Project Logo](https://github.com/CharanSuggala26/MockInterviews/blob/main/diagrams/Workflow.png)
+### 5. Automated Feedback & Evaluation
+- **Performance Summary:** Once the interview is complete, the AI provides a comprehensive summary of the user's performance.
+- **Strengths & Weaknesses:** Outlines the user's strengths and points out specific areas for improvement.
+- **Completed Sessions:** Marks the session as completed in the database once the feedback is successfully generated.
 
+## Technical Stack
+- **Frontend & App Framework:** [Streamlit](https://streamlit.io/) for building the interactive UI and chat interface.
+- **Programming Language:** Python 3
+- **Database:** MongoDB (via `pymongo`) for storing user credentials, resumes, and interview histories.
+- **AI / LLM Provider:** [Groq API](https://groq.com/) using the `llama-3.1-8b-instant` model for generating high-speed, intelligent interviewer responses.
+- **PDF Processing:** `pdfplumber` for robust text extraction.
+- **Environment Management:** `python-dotenv` for securely loading API keys (`MONGO_URI`, `GROQ_API_KEY`).
 
-## 🚀 How to Run
-
-### 1. Clone the repository
-
-```bash
-git clone https://github.com/yourusername/MockInterviews.git
-cd MockInterviews
-```
-## 🛠 Installation Instructions
-
-### 2. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
-### 3. Set up environment variables
-
-Create a `.env` file in the root directory by copying the example file:
-
-```bash
-cp .env.example .env
-```
-
-Then edit the `.env` file and add your credentials:
-
-```
-MONGO_URI = "your_mongodb_connection_string_here"
-DB_NAME = "MockInterviews"
-GROQ_API_KEY = "your_groq_api_key_here"
-```
-
-**⚠️ Important:** Never commit your `.env` file to version control!
-### Requirement.txt
-```bash
-streamlit
-requests
-python-docx
-pdfplumber
-```
-### 4. Run the App
-```bash
-streamlit run FINAL.py
-```
-
-## 📧 Contact
-
-- 📬 **Email**: [saikowshiksuggala9390@gmail.com](mailto:saikowshiksuggala9390@gmail.com)  
-- 🌐 **Portfolio**: [kowshiksugala.vercel.app](https://kowshiksuggala.vercel.app/)  
-- 💻 **GitHub**: [github.com/KowshikSuggala25](https://github.com/KowshikSuggala25)  
-- 🔗 **LinkedIn**: [linkedin.com/in/kowshiksuggala25](https://www.linkedin.com/in/kowshiksuggala25/)  
-- 📸 **Instagram**: [instagram.com/skmb_25](https://www.instagram.com/skmb_25)
-
+## Application Workflow
+1. **Onboarding:** The user creates an account or logs in.
+2. **Setup:** The user uploads a PDF resume and selects a target company from the sidebar.
+3. **Execution:** The user starts the chat. The AI reads the system prompt (which includes the resume text and company name) and begins the technical interview.
+4. **Completion:** After completing the DSA and resume-based questions, the LLM provides final feedback, and the session is marked as finalized.

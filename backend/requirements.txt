@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+pymongo
+groq
+pdfplumber
+python-dotenv
+sse-starlette
+pydantic
+passlib[bcrypt]
+pyjwt
+python-multipart

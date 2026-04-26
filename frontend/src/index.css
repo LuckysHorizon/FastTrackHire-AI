@@ -1,0 +1,126 @@
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
+
+@theme {
+  /* Neutrals */
+  --color-bg-base: #FAFAF8;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-subtle: #F4F3F0;
+  --color-bg-muted: #EBEBE7;
+
+  /* Text */
+  --color-text-primary: #0D0D0B;
+  --color-text-secondary: #5C5B57;
+  --color-text-tertiary: #9B9A95;
+  --color-text-inverse: #FAFAF8;
+
+  /* Accent */
+  --color-accent: #1A1A2E;
+  --color-accent-hover: #16213E;
+  --color-accent-light: #E8E8F5;
+
+  /* Status */
+  --color-success: #1C7A4A;
+  --color-success-light: #EDFAF4;
+  --color-warning: #A85C00;
+  --color-warning-light: #FFF8EC;
+  --color-error: #C0392B;
+  --color-error-light: #FDF2F0;
+  --color-info: #1565C0;
+  --color-info-light: #EEF4FC;
+
+  /* Brand Colors */
+  --color-brand-google: #4285F4;
+  --color-brand-amazon: #FF9900;
+  --color-brand-microsoft: #00A4EF;
+  --color-brand-apple: #555555;
+  --color-brand-meta: #0082FB;
+  --color-brand-netflix: #E50914;
+
+  /* Fonts */
+  --font-sans: "DM Sans", sans-serif;
+  --font-serif: "Playfair Display", serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Shadows */
+  --shadow-xs: 0 1px 2px rgba(13,13,11,0.06);
+  --shadow-sm: 0 2px 8px rgba(13,13,11,0.08);
+  --shadow-md: 0 4px 16px rgba(13,13,11,0.10);
+  --shadow-lg: 0 8px 32px rgba(13,13,11,0.12);
+  --shadow-xl: 0 16px 48px rgba(13,13,11,0.14);
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+
+  /* Easing */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Animation */
+  --animate-message-appear: messageAppear 280ms var(--ease-out-quart) forwards;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-base text-text-primary font-sans antialiased;
+  }
+}
+
+@keyframes messageAppear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Markdown Styling */
+.markdown-content p {
+  @apply mb-4 last:mb-0;
+}
+
+/* Default strong color for assistant messages */
+.bg-bg-subtle .markdown-content strong {
+  @apply font-bold text-accent;
+}
+
+/* Inverse strong color for user messages on dark background */
+.bg-accent .markdown-content strong {
+  @apply font-bold text-white;
+}
+
+.markdown-content code {
+  @apply bg-bg-muted/50 px-1.5 py-0.5 rounded font-mono text-[13px] border border-bg-muted;
+}
+
+.markdown-content pre {
+  @apply bg-bg-muted/30 p-4 rounded-xl border border-bg-muted my-4 overflow-x-auto;
+}
+
+.markdown-content pre code {
+  @apply bg-transparent p-0 border-none block leading-relaxed;
+}
+
+.markdown-content ul, .markdown-content ol {
+  @apply mb-4 ml-4 space-y-2;
+}
+
+.markdown-content ul {
+  @apply list-disc;
+}
+
+.markdown-content ol {
+  @apply list-decimal;
+}
+
+.markdown-content blockquote {
+  @apply border-l-4 border-accent pl-4 italic text-text-tertiary my-4;
+}

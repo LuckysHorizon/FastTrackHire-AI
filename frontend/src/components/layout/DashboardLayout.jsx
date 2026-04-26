@@ -88,7 +88,7 @@ const DashboardLayout = ({ children }) => {
         </header>
 
         {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-8 scroll-smooth">
+        <div className="flex-1 overflow-y-auto p-8 scroll-smooth no-scrollbar">
           {children}
         </div>
       </main>

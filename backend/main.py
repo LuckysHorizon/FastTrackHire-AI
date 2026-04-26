@@ -19,7 +19,11 @@ from pymongo.errors import PyMongoError, ConnectionFailure
 from dotenv import load_dotenv
 load_dotenv()
 
+from routers import coding
 app = FastAPI(title="FastTrackHire API")
+
+# Include Routers
+app.include_router(coding.router)
 
 # Setup CORS
 app.add_middleware(
@@ -191,6 +195,7 @@ async def get_resume_pdf(token: str):
 
 class CreateSessionRequest(BaseModel):
     companyId: str
+    codingEnabled: bool = False
 
 @app.post("/api/sessions/create")
 def create_session(token: str, req: CreateSessionRequest):
@@ -210,7 +215,11 @@ def create_session(token: str, req: CreateSessionRequest):
         "chat_history": [],
         "completed": False,
         "created_at": datetime.utcnow(),
-        "last_updated": datetime.utcnow()
+        "last_updated": datetime.utcnow(),
+        "codingRound": {
+            "enabled": req.codingEnabled,
+            "status": "pending"
+        }
     }
     
     db.interview_sessions.insert_one(session_data)
@@ -220,7 +229,7 @@ def create_session(token: str, req: CreateSessionRequest):
 def get_sessions(token: str):
     if db is None:
         raise HTTPException(500, "Database not configured")
-    sessions = list(db.interview_sessions.find({"user_id": token}).sort("last_updated", -1))
+    sessions = list(db.interview_sessions.find({"user_id": str(token)}).sort("last_updated", -1))
     
     # Calculate stats
     completed_sessions = [s for s in sessions if s.get("completed") and s.get("feedback")]
@@ -244,7 +253,7 @@ def get_sessions(token: str):
 def get_session(token: str, session_id: str):
     if db is None:
         raise HTTPException(500, "Database not configured")
-    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": token})
+    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": str(token)})
     if not session:
         raise HTTPException(404, "Session not found")
     session["_id"] = str(session["_id"])
@@ -262,7 +271,7 @@ def post_message(token: str, session_id: str, req: MessageRequest):
     if db is None or groq_client is None:
         raise HTTPException(500, "DB or Groq not configured")
         
-    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": token})
+    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": str(token)})
     if not session:
         raise HTTPException(404, "Session not found")
         
@@ -307,7 +316,7 @@ async def post_message_stream(token: str, session_id: str, content: str):
     if db is None or groq_client is None:
         raise HTTPException(500, "DB or Groq not configured")
         
-    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": token})
+    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": str(token)})
     if not session:
         raise HTTPException(404, "Session not found")
         
@@ -372,12 +381,20 @@ def complete_session(token: str, session_id: str):
     if db is None or groq_client is None:
         raise HTTPException(500, "DB or Groq not configured")
         
-    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": token})
+    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": str(token)})
     if not session:
         raise HTTPException(404, "Session not found")
         
     # Generate structured feedback
     chat_text = "\n".join([f"{msg['role']}: {msg['content']}" for msg in session.get("chat_history", [])])
+    
+    coding_context = ""
+    if "codingRound" in session and session["codingRound"].get("status") == "completed":
+        cr = session["codingRound"]
+        latest_sub = cr["submissions"][-1] if cr["submissions"] else None
+        if latest_sub:
+            eval_data = latest_sub["evaluation"]
+            coding_context = f"\n\n## Coding Round Results:\nScore: {eval_data.get('overall_score')}/100\nVerdict: {eval_data.get('verdict')}\nSummary: {eval_data.get('summary')}"
     
     prompt = f"""
     Analyze the following interview chat log and generate a structured JSON feedback report.
@@ -403,6 +420,7 @@ def complete_session(token: str, session_id: str):
     
     Interview Log:
     {chat_text}
+    {coding_context}
     """
     
     try:
@@ -430,7 +448,7 @@ def complete_session(token: str, session_id: str):
 def get_feedback(token: str, session_id: str):
     if db is None:
         raise HTTPException(500, "Database not configured")
-    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": token})
+    session = db.interview_sessions.find_one({"session_id": session_id, "user_id": str(token)})
     if not session or "feedback" not in session:
         raise HTTPException(404, "Feedback not found")
     return session["feedback"]

@@ -124,3 +124,55 @@
 .markdown-content blockquote {
   @apply border-l-4 border-accent pl-4 italic text-text-tertiary my-4;
 }
+
+/* Scrollbar Hiding Utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Problem Panel Markdown */
+.problem-markdown {
+  color: #333;
+  line-height: 1.8;
+}
+.problem-markdown h2 { font-size: 18px; font-weight: 700; margin-top: 24px; margin-bottom: 12px; color: #1A1A2E; }
+.problem-markdown h3 { font-size: 15px; font-weight: 600; margin-top: 20px; margin-bottom: 8px; color: #444; }
+.problem-markdown p { margin-bottom: 12px; }
+.problem-markdown ul, .problem-markdown ol { margin-left: 20px; margin-bottom: 12px; }
+.problem-markdown ul { list-style-type: disc; }
+.problem-markdown ol { list-style-type: decimal; }
+.problem-markdown li { margin-bottom: 4px; }
+.problem-markdown code {
+  background: #F0EEE8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  color: #1A1A2E;
+}
+.problem-markdown pre {
+  background: #1E1E2E;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  overflow-x: auto;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+.problem-markdown pre code {
+  background: none;
+  color: #CDD6F4;
+  padding: 0;
+  font-size: 13px;
+  line-height: 1.6;
+}
+.problem-markdown strong { font-weight: 700; color: #1A1A2E; }
+
+/* Split.js gutter */
+.split-horizontal > .gutter {
+  cursor: col-resize !important;
+}

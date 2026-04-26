@@ -7,11 +7,13 @@ import { Badge } from '../components/ui/Badge';
 import { useAuth } from '../context/AuthContext';
 import { CheckCircle2, XCircle, TrendingUp, ArrowLeft, Download, AlertCircle } from 'lucide-react';
 import axios from 'axios';
+import CodingResultCard from '../components/coding/CodingResultCard';
 
 const FeedbackScreen = () => {
   const { sessionId } = useParams();
   const { API_URL } = useAuth();
   const [feedback, setFeedback] = useState(null);
+  const [sessionData, setSessionData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -23,6 +25,10 @@ const FeedbackScreen = () => {
         setError(null);
         const res = await axios.get(`${API_URL}/sessions/${sessionId}/feedback?token=${token}`);
         setFeedback(res.data);
+        
+        // Also fetch session to get codingRound data
+        const sRes = await axios.get(`${API_URL}/sessions/${sessionId}?token=${token}`);
+        setSessionData(sRes.data);
       } catch (err) {
         console.error(err);
         setError("Failed to retrieve performance analytics. The session may still be processing.");
@@ -151,6 +157,10 @@ const FeedbackScreen = () => {
              ))}
            </div>
         </Card>
+
+        {sessionData?.codingRound && (
+            <CodingResultCard codingRound={sessionData.codingRound} />
+        )}
 
         <Card className="bg-accent text-text-inverse p-8 md:p-10 flex flex-col md:flex-row items-center justify-between rounded-2xl">
            <div className="mb-8 md:mb-0">

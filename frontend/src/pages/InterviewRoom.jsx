@@ -12,9 +12,12 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
+import { useCodingStore } from '../stores/codingStore';
+import CodingRoom from '../components/coding/CodingRoom';
 
 const InterviewRoom = () => {
   const { sessionId } = useParams();
+  const navigate = useNavigate();
   const { API_URL, user } = useAuth();
   const [session, setSession] = useState(null);
   const [messages, setMessages] = useState([]);
@@ -28,7 +31,9 @@ const InterviewRoom = () => {
   const [streamingMessage, setStreamingMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const [chatWidth, setChatWidth] = useState(600);
+  const [codingMode, setCodingMode] = useState(false);
   const isResizing = useRef(false);
+  const { status: codingStatus, initSession: initCodingSession } = useCodingStore();
 
   const startResizing = (e) => {
     isResizing.current = true;
@@ -152,6 +157,17 @@ const InterviewRoom = () => {
     }
   };
 
+  if (codingMode || (session?.codingRound?.status && session?.codingRound?.status !== 'pending')) {
+    return (
+        <div className="h-screen w-full flex flex-col bg-[#16161E] overflow-hidden">
+            <ChatTicker text="Coding Assessment Phase Active" />
+            <div className="flex-1 overflow-hidden">
+                <CodingRoom sessionId={sessionId} onBack={() => setCodingMode(false)} />
+            </div>
+        </div>
+    );
+  }
+
   return (
     <div className="h-screen w-full flex flex-col bg-bg-base overflow-hidden">
       <ChatTicker text={tickerText} />
@@ -185,7 +201,7 @@ const InterviewRoom = () => {
             )}
           </div>
 
-          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth">
+          <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-8 scroll-smooth no-scrollbar">
             {messages.length === 0 && !isTyping && (
                <div className="h-full flex flex-col items-center justify-center text-center px-12">
                  <div className="w-12 h-12 bg-bg-subtle rounded-full flex items-center justify-center mb-4">
@@ -274,7 +290,7 @@ const InterviewRoom = () => {
         />
 
         {/* Right Panel: Context */}
-        <div className="flex-1 bg-bg-base p-8 overflow-y-auto">
+        <div className="flex-1 bg-bg-base p-8 overflow-y-auto no-scrollbar">
           <div className="max-w-[800px] mx-auto">
              <div className="flex items-center space-x-3 mb-8">
                <div className="bg-white p-2 rounded-lg border border-bg-muted shadow-sm">
@@ -299,12 +315,29 @@ const InterviewRoom = () => {
                 <Card>
                    <div className="flex items-center justify-between mb-6">
                      <div className="flex items-center">
+                        <Terminal className="w-5 h-5 text-text-tertiary mr-3" />
+                        <h5 className="font-bold text-[14px] uppercase tracking-wider text-text-secondary">Real-time Intelligence</h5>
+                     </div>
+                     {(!session?.codingRound?.status || session?.codingRound?.status === 'pending') && !completed && (
+                        <Button 
+                            size="sm" 
+                            variant="outline" 
+                            className="h-8 gap-2 border-accent text-accent hover:bg-accent hover:text-white transition-all animate-pulse"
+                            onClick={() => setCodingMode(true)}
+                        >
+                            <Terminal className="w-3 h-3" />
+                            Start Coding Round
+                        </Button>
+                      )}
+                   </div>
+                   <div className="flex items-center justify-between mb-6">
+                     <div className="flex items-center">
                        <FileText className="w-5 h-5 text-text-tertiary mr-3" />
                        <h5 className="font-bold text-[14px] uppercase tracking-wider text-text-secondary">Resume Context</h5>
                      </div>
                      <Badge variant="success">Parsed & Active</Badge>
                    </div>
-                   <div className="bg-bg-subtle/50 p-6 rounded-xl border border-dashed border-bg-muted text-[13px] text-text-secondary leading-loose max-h-[500px] overflow-y-auto font-sans whitespace-pre-wrap">
+                   <div className="bg-bg-subtle/50 p-6 rounded-xl border border-dashed border-bg-muted text-[13px] text-text-secondary leading-loose max-h-[500px] overflow-y-auto no-scrollbar font-sans whitespace-pre-wrap">
                       {session?.resume_text || "Intelligence not available for this session."}
                    </div>
                 </Card>

@@ -10,11 +10,41 @@ import { Timer, Code2, Award, Zap, AlertCircle, ArrowLeft, CheckCircle2, XCircle
 import { motion } from 'framer-motion';
 
 const LANGUAGES = [
-  { id: 'python', label: 'Python', icon: '🐍', desc: 'Clean & expressive' },
-  { id: 'javascript', label: 'JavaScript', icon: '⚡', desc: 'Versatile & fast' },
-  { id: 'java', label: 'Java', icon: '☕', desc: 'Strong-typed & robust' },
-  { id: 'cpp', label: 'C++', icon: '⚙️', desc: 'High performance' },
-  { id: 'go', label: 'Go', icon: '🔷', desc: 'Simple & concurrent' },
+  { 
+    id: 'python', 
+    label: 'Python', 
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/python/python-original.svg', 
+    desc: 'Clean & expressive',
+    color: '#3776AB'
+  },
+  { 
+    id: 'javascript', 
+    label: 'JavaScript', 
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg', 
+    desc: 'Versatile & fast',
+    color: '#F7DF1E'
+  },
+  { 
+    id: 'java', 
+    label: 'Java', 
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/java/java-original.svg', 
+    desc: 'Strong-typed & robust',
+    color: '#007396'
+  },
+  { 
+    id: 'cpp', 
+    label: 'C++', 
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/cplusplus/cplusplus-original.svg', 
+    desc: 'High performance',
+    color: '#00599C'
+  },
+  { 
+    id: 'go', 
+    label: 'Go', 
+    icon: 'https://cdn.jsdelivr.net/gh/devicons/devicon/icons/go/go-original.svg', 
+    desc: 'Simple & concurrent',
+    color: '#00ADD8'
+  },
 ];
 
 const CodingRoom = ({ sessionId, onBack }) => {
@@ -72,48 +102,56 @@ const CodingRoom = ({ sessionId, onBack }) => {
           animate={{ opacity: 1, y: 0 }}
           className="max-w-[540px] w-full"
         >
-          <Card className="p-10 text-center relative overflow-hidden bg-white border border-[#E8E6E0] shadow-xl">
-            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[#1A1A2E] to-emerald-500" />
-            <div className="w-14 h-14 bg-[#1A1A2E]/5 rounded-2xl flex items-center justify-center mx-auto mb-5">
-              <Code2 className="w-7 h-7 text-[#1A1A2E]" />
+          <Card className="p-10 text-center relative overflow-hidden bg-white border border-[#E8E6E0] shadow-2xl rounded-3xl">
+            <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-accent via-emerald-500 to-accent" />
+            
+            <div className="w-16 h-16 bg-accent/5 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-sm border border-accent/10">
+              <Code2 className="w-8 h-8 text-accent" />
             </div>
-            <h2 className="text-[26px] font-serif font-bold text-[#1A1A2E] mb-2">Coding Assessment</h2>
-            <p className="text-[#888] text-[14px] mb-8 leading-relaxed max-w-[380px] mx-auto">
-              Select your preferred language. A problem will be generated based on your profile.
+            
+            <h2 className="text-[28px] font-serif font-bold text-accent mb-2">Coding Assessment</h2>
+            <p className="text-text-tertiary text-[15px] mb-10 leading-relaxed max-w-[400px] mx-auto">
+              Select your preferred language. A custom technical challenge will be generated based on your profile and target company.
             </p>
 
-            <div className="grid grid-cols-1 gap-2 mb-8">
+            <div className="grid grid-cols-1 gap-3 mb-10">
               {LANGUAGES.map((lang) => (
                 <button
                   key={lang.id}
                   onClick={() => setSelectedLang(lang.id)}
-                  className={`flex items-center gap-4 p-3.5 rounded-xl border-2 text-left transition-all ${
+                  className={`group flex items-center gap-5 p-5 rounded-2xl border-2 text-left transition-all duration-300 ${
                     selectedLang === lang.id
-                      ? 'border-[#1A1A2E] bg-[#1A1A2E]/5 shadow-sm'
-                      : 'border-[#E8E6E0] bg-white hover:border-[#CCC]'
+                      ? 'border-accent bg-accent/5 ring-4 ring-accent/5'
+                      : 'border-bg-muted bg-white hover:border-bg-muted-hover hover:shadow-md'
                   }`}
                 >
-                  <span className="text-[22px]">{lang.icon}</span>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                    selectedLang === lang.id ? 'bg-white shadow-sm' : 'bg-bg-subtle group-hover:bg-bg-muted'
+                  }`}>
+                    <img src={lang.icon} alt={lang.label} className="w-7 h-7 object-contain" />
+                  </div>
+                  
                   <div className="flex-1">
-                    <p className={`text-[13px] font-bold ${selectedLang === lang.id ? 'text-[#1A1A2E]' : 'text-[#444]'}`}>
+                    <p className={`text-[15px] font-bold transition-colors ${selectedLang === lang.id ? 'text-accent' : 'text-text-secondary'}`}>
                       {lang.label}
                     </p>
-                    <p className="text-[11px] text-[#999]">{lang.desc}</p>
+                    <p className="text-[12px] text-text-tertiary mt-0.5">{lang.desc}</p>
                   </div>
-                  {selectedLang === lang.id && (
-                    <div className="w-5 h-5 rounded-full bg-[#1A1A2E] flex items-center justify-center">
-                      <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  )}
+                  
+                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                    selectedLang === lang.id ? 'bg-accent border-accent' : 'border-bg-muted'
+                  }`}>
+                    {selectedLang === lang.id && (
+                      <CheckCircle2 className="w-4 h-4 text-white" />
+                    )}
+                  </div>
                 </button>
               ))}
             </div>
 
             {questionError && (
-              <div className="flex items-center gap-2 p-3 mb-4 rounded-lg bg-red-50 border border-red-200 text-red-600 text-[13px]">
-                <AlertCircle className="w-4 h-4 shrink-0" />
+              <div className="flex items-center gap-3 p-4 mb-6 rounded-xl bg-error-light/50 border border-error/10 text-error text-[14px] font-medium">
+                <AlertCircle className="w-5 h-5 shrink-0" />
                 <span>{questionError}</span>
               </div>
             )}
@@ -121,12 +159,12 @@ const CodingRoom = ({ sessionId, onBack }) => {
             <button
               onClick={handleStartCoding}
               disabled={questionLoading}
-              className="w-full bg-[#1A1A2E] text-white h-[52px] rounded-xl font-bold text-[14px] hover:bg-[#2A2A4E] transition-all shadow-lg disabled:opacity-50 flex items-center justify-center gap-3"
+              className="w-full bg-accent text-white h-[60px] rounded-2xl font-bold text-[16px] hover:bg-accent-hover transition-all shadow-lg shadow-accent/20 disabled:opacity-50 flex items-center justify-center gap-3 active:scale-[0.98]"
             >
               {questionLoading ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Generating Problem...
+                  <span className="w-5 h-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                  Initialising Environment...
                 </>
               ) : (
                 <>
@@ -139,9 +177,9 @@ const CodingRoom = ({ sessionId, onBack }) => {
             {onBack && (
               <button
                 onClick={onBack}
-                className="mt-4 text-[13px] text-[#999] hover:text-[#555] flex items-center gap-1.5 mx-auto transition-colors"
+                className="mt-6 text-[14px] text-text-tertiary hover:text-text-secondary flex items-center gap-2 mx-auto transition-colors font-medium"
               >
-                <ArrowLeft className="w-3.5 h-3.5" />
+                <ArrowLeft className="w-4 h-4" />
                 Return to Interview
               </button>
             )}

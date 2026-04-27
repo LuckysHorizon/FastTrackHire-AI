@@ -7,6 +7,7 @@ import { useAuth } from '../context/AuthContext';
 import { Search, Calendar, ChevronRight, History } from 'lucide-react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { COMPANY_LOGOS } from '../lib/logos';
 
 const SessionsList = () => {
   const { API_URL } = useAuth();
@@ -67,8 +68,25 @@ const SessionsList = () => {
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-xl bg-accent text-white flex items-center justify-center font-bold text-[16px] mr-5 uppercase shadow-sm group-hover:scale-105 transition-transform">
-                      {session.company.charAt(0)}
+                    <div className="w-12 h-12 rounded-xl bg-white border border-bg-muted flex items-center justify-center mr-5 overflow-hidden p-2 shadow-sm group-hover:scale-105 transition-transform shrink-0">
+                      {COMPANY_LOGOS[session.company] ? (
+                        <img 
+                          src={COMPANY_LOGOS[session.company].logo} 
+                          alt={session.company} 
+                          className="w-full h-full object-contain" 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.className = "w-full h-full bg-accent text-white flex items-center justify-center font-bold text-[16px] uppercase";
+                            fallback.innerText = session.company.charAt(0);
+                            e.target.parentElement.appendChild(fallback);
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-accent text-white flex items-center justify-center font-bold text-[16px] uppercase">
+                          {session.company.charAt(0)}
+                        </div>
+                      )}
                     </div>
                     <div>
                       <h4 className="text-[17px] font-bold text-accent group-hover:text-accent-hover transition-colors">{session.company}</h4>

@@ -6,7 +6,7 @@ import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { Avatar } from '../components/ui/Avatar';
 import { Badge } from '../components/ui/Badge';
-import { Send, Terminal, FileText, AlertCircle, Info } from 'lucide-react';
+import { Send, Terminal, FileText, AlertCircle, Info, Zap, BarChart2, Code2 } from 'lucide-react';
 import axios from 'axios';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -14,6 +14,7 @@ import rehypeHighlight from 'rehype-highlight';
 import 'highlight.js/styles/github-dark.css';
 import { useCodingStore } from '../stores/codingStore';
 import CodingRoom from '../components/coding/CodingRoom';
+import { COMPANY_LOGOS } from '../lib/logos';
 
 const InterviewRoom = () => {
   const { sessionId } = useParams();
@@ -186,8 +187,25 @@ const InterviewRoom = () => {
         >
           <div className="p-6 border-b border-bg-muted flex items-center justify-between">
             <div className="flex items-center">
-              <div className="w-10 h-10 rounded bg-accent text-white flex items-center justify-center font-bold mr-3 uppercase">
-                {session?.company?.charAt(0)}
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3 bg-white border border-bg-muted overflow-hidden p-1.5 shadow-sm shrink-0">
+                {COMPANY_LOGOS[session?.company] ? (
+                  <img 
+                    src={COMPANY_LOGOS[session?.company].logo} 
+                    alt={session?.company} 
+                    className="w-full h-full object-contain" 
+                    onError={(e) => {
+                      e.target.style.display = 'none';
+                      const fallback = document.createElement('div');
+                      fallback.className = "w-full h-full bg-accent text-white flex items-center justify-center font-bold uppercase";
+                      fallback.innerText = session?.company?.charAt(0) || 'C';
+                      e.target.parentElement.appendChild(fallback);
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-accent text-white flex items-center justify-center font-bold uppercase">
+                    {session?.company?.charAt(0)}
+                  </div>
+                )}
               </div>
               <div>
                 <h3 className="font-serif text-[18px] font-bold text-accent">{session?.company} Simulation</h3>
@@ -216,11 +234,30 @@ const InterviewRoom = () => {
             {messages.map((msg, i) => (
               <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                 <div className={`flex max-w-[85%] ${msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <Avatar 
-                    size="sm" 
-                    fallback={msg.role === 'user' ? user?.full_name?.charAt(0) : session?.company?.charAt(0)} 
-                    className={msg.role === 'user' ? 'ml-3' : 'mr-3'} 
-                  />
+                  {msg.role === 'user' ? (
+                    <Avatar size="sm" fallback={user?.full_name?.charAt(0)} className="ml-3" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-md bg-white border border-bg-muted flex items-center justify-center mr-3 overflow-hidden p-1 shrink-0">
+                      {COMPANY_LOGOS[session?.company] ? (
+                        <img 
+                          src={COMPANY_LOGOS[session?.company].logo} 
+                          alt={session?.company} 
+                          className="w-full h-full object-contain" 
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                            const fallback = document.createElement('div');
+                            fallback.className = "w-full h-full bg-accent text-white flex items-center justify-center text-[12px] font-bold uppercase";
+                            fallback.innerText = session?.company?.charAt(0) || 'C';
+                            e.target.parentElement.appendChild(fallback);
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-accent text-white flex items-center justify-center text-[12px] font-bold uppercase">
+                          {session?.company?.charAt(0)}
+                        </div>
+                      )}
+                    </div>
+                  )}
                   <div>
                     <div className={`p-4 rounded-2xl text-[14px] leading-relaxed shadow-sm markdown-content ${
                       msg.role === 'user' 
@@ -245,7 +282,26 @@ const InterviewRoom = () => {
             {streamingMessage && (
               <div className="flex justify-start">
                 <div className="flex max-w-[85%] flex-row">
-                  <Avatar size="sm" fallback={session?.company?.charAt(0)} className="mr-3" />
+                  <div className="w-8 h-8 rounded-md bg-white border border-bg-muted flex items-center justify-center mr-3 overflow-hidden p-1 shrink-0">
+                    {COMPANY_LOGOS[session?.company] ? (
+                      <img 
+                        src={COMPANY_LOGOS[session?.company].logo} 
+                        alt={session?.company} 
+                        className="w-full h-full object-contain" 
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          const fallback = document.createElement('div');
+                          fallback.className = "w-full h-full bg-accent text-white flex items-center justify-center text-[12px] font-bold uppercase";
+                          fallback.innerText = session?.company?.charAt(0) || 'C';
+                          e.target.parentElement.appendChild(fallback);
+                        }}
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-accent text-white flex items-center justify-center text-[12px] font-bold uppercase">
+                        {session?.company?.charAt(0)}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <div className="p-4 rounded-2xl rounded-tl-none text-[14px] leading-relaxed bg-bg-subtle text-text-primary border border-bg-muted shadow-sm markdown-content">
                       <ReactMarkdown 
@@ -312,33 +368,47 @@ const InterviewRoom = () => {
                    </div>
                 </Card>
 
-                <Card>
-                   <div className="flex items-center justify-between mb-6">
+                <Card className="p-0 overflow-hidden border-bg-muted shadow-sm">
+                   <div className="p-6 border-b border-bg-muted bg-bg-subtle/30 flex items-center justify-between">
                      <div className="flex items-center">
-                        <Terminal className="w-5 h-5 text-text-tertiary mr-3" />
-                        <h5 className="font-bold text-[14px] uppercase tracking-wider text-text-secondary">Real-time Intelligence</h5>
+                        <div className="w-8 h-8 rounded-lg bg-accent/5 flex items-center justify-center mr-3 border border-accent/10">
+                           <Zap className="w-4 h-4 text-accent" />
+                        </div>
+                        <h5 className="font-bold text-[14px] uppercase tracking-wider text-accent">Real-time Intelligence</h5>
                      </div>
                      {(!session?.codingRound?.status || session?.codingRound?.status === 'pending') && !completed && (
-                        <Button 
-                            size="sm" 
-                            variant="outline" 
-                            className="h-8 gap-2 border-accent text-accent hover:bg-accent hover:text-white transition-all animate-pulse"
+                        <button 
                             onClick={() => setCodingMode(true)}
+                            className="h-9 px-4 rounded-lg bg-accent text-white text-[12px] font-bold flex items-center gap-2 hover:bg-accent-hover transition-all shadow-md shadow-accent/10 active:scale-95 group"
                         >
-                            <Terminal className="w-3 h-3" />
-                            Start Coding Round
-                        </Button>
+                            <Code2 className="w-3.5 h-3.5 group-hover:rotate-12 transition-transform" />
+                            Start Coding Assessment
+                        </button>
                       )}
                    </div>
-                   <div className="flex items-center justify-between mb-6">
-                     <div className="flex items-center">
-                       <FileText className="w-5 h-5 text-text-tertiary mr-3" />
-                       <h5 className="font-bold text-[14px] uppercase tracking-wider text-text-secondary">Resume Context</h5>
-                     </div>
-                     <Badge variant="success">Parsed & Active</Badge>
-                   </div>
-                   <div className="bg-bg-subtle/50 p-6 rounded-xl border border-dashed border-bg-muted text-[13px] text-text-secondary leading-loose max-h-[500px] overflow-y-auto no-scrollbar font-sans whitespace-pre-wrap">
-                      {session?.resume_text || "Intelligence not available for this session."}
+                   <div className="p-6 space-y-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <FileText className="w-5 h-5 text-text-tertiary mr-3" />
+                          <h5 className="font-bold text-[13px] uppercase tracking-wide text-text-secondary">Resume Context</h5>
+                        </div>
+                        <div className="flex items-center px-2 py-1 rounded-full bg-success/10 border border-success/20">
+                          <div className="w-1.5 h-1.5 rounded-full bg-success mr-2 animate-pulse"></div>
+                          <span className="text-[10px] font-bold text-success uppercase tracking-wider">Parsed & Active</span>
+                        </div>
+                      </div>
+                      
+                      <div className="bg-bg-subtle/50 p-6 rounded-2xl border border-bg-muted text-[13px] text-text-secondary leading-relaxed max-h-[400px] overflow-y-auto no-scrollbar font-sans whitespace-pre-wrap relative">
+                        <div className="absolute top-4 right-4">
+                           <div className="px-2 py-1 bg-white/80 backdrop-blur rounded border border-bg-muted text-[10px] text-text-tertiary font-bold uppercase tracking-tighter">Source: PDF</div>
+                        </div>
+                        {session?.resume_text || "Intelligence not available for this session."}
+                      </div>
+
+                      <div className="flex items-center p-4 bg-info-light/30 rounded-xl border border-info/10 text-info">
+                         <BarChart2 className="w-4 h-4 mr-3 shrink-0" />
+                         <p className="text-[11px] font-medium leading-relaxed">Intelligence metrics are derived from real-time analysis of candidate responses and resume data.</p>
+                      </div>
                    </div>
                 </Card>
 

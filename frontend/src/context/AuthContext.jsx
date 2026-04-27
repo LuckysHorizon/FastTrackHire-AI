@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
+import { useAppStore } from '../stores/appStore';
 
 const AuthContext = createContext(null);
 
@@ -36,6 +37,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     setUser(null);
+    useAppStore.getState().clearCache();
   };
 
   return (

@@ -5,41 +5,20 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { useAuth } from '../context/AuthContext';
 import { FileText, Play, Activity, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { useAppStore } from '../stores/appStore';
 
 const Dashboard = () => {
   const { user, API_URL } = useAuth();
-  const [sessions, setSessions] = useState([]);
-  const [stats, setStats] = useState({ avg_score: 0, total_count: 0 });
-  const [resumeStatus, setResumeStatus] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { sessions, stats, resumeStatus, loading, error, fetchDashboardData } = useAppStore();
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setError(null);
-        const token = localStorage.getItem('token');
-        if (!token) return;
-        
-        const [sessionsRes, resumeRes] = await Promise.all([
-          axios.get(`${API_URL}/sessions?token=${token}`),
-          axios.get(`${API_URL}/resume?token=${token}`).catch(() => ({ data: { has_resume: false } }))
-        ]);
-        setSessions(sessionsRes.data?.sessions || []);
-        setStats(sessionsRes.data?.stats || { avg_score: 0, total_count: 0 });
-        setResumeStatus(resumeRes.data);
-      } catch (err) {
-        console.error("Error fetching dashboard data", err);
-        setError("Failed to synchronize intelligence archive.");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, [API_URL]);
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchDashboardData(API_URL, token);
+    }
+  }, [API_URL, fetchDashboardData]);
 
   if (loading) {
     return (

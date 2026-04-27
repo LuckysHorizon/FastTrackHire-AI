@@ -5,32 +5,22 @@ import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { useAuth } from '../context/AuthContext';
 import { Search, Calendar, ChevronRight, History } from 'lucide-react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { COMPANY_LOGOS } from '../lib/logos';
+import { useAppStore } from '../stores/appStore';
 
 const SessionsList = () => {
   const { API_URL } = useAuth();
-  const [sessions, setSessions] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { sessions, loading, fetchDashboardData } = useAppStore();
   const [searchTerm, setSearchTerm] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchSessions = async () => {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-      try {
-        const res = await axios.get(`${API_URL}/sessions?token=${token}`);
-        setSessions(res.data?.sessions || []);
-      } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchSessions();
-  }, [API_URL]);
+    const token = localStorage.getItem('token');
+    if (token) {
+      fetchDashboardData(API_URL, token);
+    }
+  }, [API_URL, fetchDashboardData]);
 
   const filteredSessions = sessions.filter(s => 
     s.company.toLowerCase().includes(searchTerm.toLowerCase())
